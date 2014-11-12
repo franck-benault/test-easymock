@@ -4,7 +4,9 @@ import java.util.List;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
+import javax.persistence.NoResultException;
 import javax.persistence.Persistence;
+import javax.persistence.TypedQuery;
 
 import net.franckbenault.jpa.hibernate.Student;
 import net.franckbenault.jpa.hibernate.StudentManager;
@@ -27,7 +29,18 @@ public class StudentQueryImpl implements StudentQuery {
 
 	@Override
 	public Student findByName(String name) {
-	    return null;
+		
+		TypedQuery<Student> query = em.createQuery(
+	            "select s from Student s where s.name=:name", Student.class);
+		query.setParameter("name", name);
+		
+		try  {
+			return query.getSingleResult();
+		
+		} catch (NoResultException e ) {
+			return null;
+		}
+
 	}
 	
 	@Override
