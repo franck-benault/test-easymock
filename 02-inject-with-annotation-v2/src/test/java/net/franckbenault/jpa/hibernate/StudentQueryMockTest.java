@@ -90,7 +90,31 @@ public class StudentQueryMockTest  {
 	}	
 
 	@Test
-	public void testfindAllStudents() throws ClassNotFoundException, SQLException {
+	public void testfindAllStudents()  {
+
+		@SuppressWarnings("unchecked")
+		TypedQuery<Student> queryMock = EasyMock.createNiceMock(TypedQuery.class);
+		
+		List<Student> res = new ArrayList<Student>();
+		res.add(new Student());
+		
+		EasyMock.expect(queryMock.getResultList()).andReturn(res);
+		
+		EasyMock.expect(emMock.createQuery(EasyMock.isA(String.class),EasyMock.isA(java.lang.Class.class))).andReturn(queryMock);
+		
+		EasyMock.replay(emMock);
+		EasyMock.replay(queryMock);
+		
+		List<Student> students = studentQuery.findAllStudents();
+
+		assertNotNull(students);
+		assertFalse(students.isEmpty());
+
+	}
+
+	
+	@Test
+	public void testfindAllStudents_isEmpty()  {
 
 		@SuppressWarnings("unchecked")
 		TypedQuery<Student> queryMock = EasyMock.createNiceMock(TypedQuery.class);		
@@ -101,10 +125,10 @@ public class StudentQueryMockTest  {
 		EasyMock.replay(emMock);
 		EasyMock.replay(queryMock);
 		
-		//List<Student> students = studentManager.findAllStudents();
+		List<Student> students = studentQuery.findAllStudents();
 
-		//assertNotNull(students);
+		assertNotNull(students);
+		assertTrue(students.isEmpty());
 
 	}
-
 }
