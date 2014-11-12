@@ -1,11 +1,14 @@
 package net.franckbenault.jpa.hibernate;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Temporal;
+
+import net.franckbenault.jpa.hibernate.exception.Constraint;
 
 @Entity
 public class Student {
@@ -47,8 +50,19 @@ public class Student {
   
   
   public List<Constraint> check() {
-	  //name not null
-	  return null;
+	  List<Constraint> constraints = new ArrayList<Constraint>();
+	  
+	  if(this.name==null)
+		  constraints.add(new Constraint("name"));
+	 
+	  return constraints;
+  }
+  
+  public Student(String name) {
+	  this.name = name;
+  }
+  
+  public Student() {
   }
   
 }

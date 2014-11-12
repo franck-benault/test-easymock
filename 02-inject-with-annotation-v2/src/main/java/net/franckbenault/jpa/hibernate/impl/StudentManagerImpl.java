@@ -9,6 +9,7 @@ import javax.persistence.Persistence;
 import net.franckbenault.jpa.hibernate.Student;
 import net.franckbenault.jpa.hibernate.StudentManager;
 import net.franckbenault.jpa.hibernate.StudentQuery;
+import net.franckbenault.jpa.hibernate.exception.ConstraintViolatedException;
 
 
 public class StudentManagerImpl implements StudentManager {
@@ -27,10 +28,15 @@ public class StudentManagerImpl implements StudentManager {
 	}
 
 	@Override
-	public Student createStudent(Student student ) {
+	public Student createStudent(Student student ) throws ConstraintViolatedException {
 		
 		//name not null ?
-		student.check();
+		List<net.franckbenault.jpa.hibernate.exception.Constraint> constraints = student.check();
+		
+		if(!constraints.isEmpty()) {
+			throw new ConstraintViolatedException(constraints);
+		}
+			
 		
 	    Student student2 = studentQuery.findByName(student.getName());
 		

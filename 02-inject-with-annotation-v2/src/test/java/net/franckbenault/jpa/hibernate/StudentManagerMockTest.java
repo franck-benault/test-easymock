@@ -10,6 +10,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.EntityTransaction;
 import javax.persistence.TypedQuery;
 
+import net.franckbenault.jpa.hibernate.exception.ConstraintViolatedException;
 import net.franckbenault.jpa.hibernate.impl.StudentManagerImpl;
 
 import org.easymock.EasyMock;
@@ -34,8 +35,10 @@ public class StudentManagerMockTest  {
 	
 
 	@Mock(type = MockType.NICE)
-	private EntityManager emMock = EasyMock.createNiceMock(EntityManager.class);
+	private StudentQuery studentQueryMock = EasyMock.createNiceMock(StudentQuery.class);
 	
+	@Mock(type = MockType.NICE)
+	private EntityManager emMock = EasyMock.createNiceMock(EntityManager.class);
 	
 	
 	@BeforeClass
@@ -45,6 +48,7 @@ public class StudentManagerMockTest  {
 		
 	@Before
 	public void setUp() throws Exception {
+		EasyMock.reset(studentQueryMock);
 		EasyMock.reset(emMock);
 	}
 
@@ -55,7 +59,7 @@ public class StudentManagerMockTest  {
 	}
 
 	@Test
-	public void testCreateStudent() throws ClassNotFoundException, SQLException {
+	public void testCreateStudent() throws ConstraintViolatedException {
 		
 		EntityTransaction entityTransactionMock = EasyMock.createNiceMock(EntityTransaction.class);
 		entityTransactionMock.begin();
@@ -65,9 +69,30 @@ public class StudentManagerMockTest  {
 		EasyMock.replay(emMock);
 		EasyMock.replay(entityTransactionMock);
 		
-		//Student s = studentManager.createStudent(new Student());
+		Student s = new Student("newName");
 		
-		//assertNotNull(s);
+		s = studentManager.createStudent(s);
+		
+		assertNotNull(s);
+		
+	}
+	
+	@Test
+	public void testCreateStudent_NoName() throws ConstraintViolatedException {
+		
+		EntityTransaction entityTransactionMock = EasyMock.createNiceMock(EntityTransaction.class);
+		entityTransactionMock.begin();
+		entityTransactionMock.commit();
+		EasyMock.expect(emMock.getTransaction()).andReturn(entityTransactionMock).times(2);
+		
+		EasyMock.replay(emMock);
+		EasyMock.replay(entityTransactionMock);
+		
+		Student s = new Student("newName");
+		
+		s = studentManager.createStudent(s);
+		
+		//assertNull(s);
 		
 	}
 
@@ -89,22 +114,6 @@ public class StudentManagerMockTest  {
 	}
 	
 
-	@Test
-	public void testfindAllStudents() throws ClassNotFoundException, SQLException {
 
-		@SuppressWarnings("unchecked")
-		TypedQuery<Student> queryMock = EasyMock.createNiceMock(TypedQuery.class);		
-		EasyMock.expect(queryMock.getResultList()).andReturn(new ArrayList<Student>());
-		
-		EasyMock.expect(emMock.createQuery(EasyMock.isA(String.class),EasyMock.isA(java.lang.Class.class))).andReturn(queryMock);
-		
-		EasyMock.replay(emMock);
-		EasyMock.replay(queryMock);
-		
-		//List<Student> students = studentManager.findAllStudents();
-
-		//assertNotNull(students);
-
-	}
 
 }
