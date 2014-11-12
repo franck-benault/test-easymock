@@ -77,7 +77,7 @@ public class StudentManagerMockTest  {
 		
 	}
 	
-	@Test
+	@Test(expected=ConstraintViolatedException.class)
 	public void testCreateStudent_NoName() throws ConstraintViolatedException {
 		
 		EntityTransaction entityTransactionMock = EasyMock.createNiceMock(EntityTransaction.class);
@@ -88,12 +88,10 @@ public class StudentManagerMockTest  {
 		EasyMock.replay(emMock);
 		EasyMock.replay(entityTransactionMock);
 		
-		Student s = new Student("newName");
+		Student s = new Student();
 		
 		s = studentManager.createStudent(s);
-		
-		//assertNull(s);
-		
+				
 	}
 
 	@Test
