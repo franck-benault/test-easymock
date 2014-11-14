@@ -10,6 +10,7 @@ import net.franckbenault.jpa.hibernate.Student;
 import net.franckbenault.jpa.hibernate.StudentManager;
 import net.franckbenault.jpa.hibernate.StudentQuery;
 import net.franckbenault.jpa.hibernate.exception.ConstraintViolatedException;
+import net.franckbenault.jpa.hibernate.exception.NotFoundException;
 
 
 public class StudentManagerImpl implements StudentManager {
@@ -47,7 +48,7 @@ public class StudentManagerImpl implements StudentManager {
 	}
 
 	@Override
-	public void removeStudent(String studentName) {
+	public void removeStudent(String studentName) throws NotFoundException {
 	    Student student = studentQuery.findByName(studentName);
 	    
 	    em.getTransaction().begin();
