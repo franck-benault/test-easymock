@@ -11,6 +11,7 @@ import javax.persistence.EntityTransaction;
 import javax.persistence.TypedQuery;
 
 import net.franckbenault.jpa.hibernate.exception.ConstraintViolatedException;
+import net.franckbenault.jpa.hibernate.exception.NotFoundException;
 import net.franckbenault.jpa.hibernate.impl.StudentManagerImpl;
 
 import org.easymock.EasyMock;
@@ -122,22 +123,48 @@ public class StudentManagerMockTest  {
 	}
 
 	@Test
-	public void testRemoveStudent() throws ClassNotFoundException, SQLException {
+	public void testRemoveStudent() throws NotFoundException {
+
+		Student student = new Student();
+		student.setName("exists");
 		
 		EntityTransaction entityTransactionMock = EasyMock.createNiceMock(EntityTransaction.class);
 		entityTransactionMock.begin();
 		entityTransactionMock.commit();
 		EasyMock.expect(emMock.getTransaction()).andReturn(entityTransactionMock).times(2);
 		
+		EasyMock.expect(studentQueryMock.findByName(student.getName())).andReturn(student);
+		
 		EasyMock.replay(emMock);
+		EasyMock.replay(studentQueryMock);
 		EasyMock.replay(entityTransactionMock);
+		
 
 		
-		Student student = new Student();
-		
-		//studentManager.removeStudent(student);
+		studentManager.removeStudent(student.getName());
 	}
 	
+	@Test(expected=NotFoundException.class)
+	public void testRemoveStudent_NotFound() throws NotFoundException {
+
+		Student student = new Student();
+		student.setName("exists");
+		
+		EntityTransaction entityTransactionMock = EasyMock.createNiceMock(EntityTransaction.class);
+		entityTransactionMock.begin();
+		entityTransactionMock.commit();
+		EasyMock.expect(emMock.getTransaction()).andReturn(entityTransactionMock).times(2);
+		
+		EasyMock.expect(studentQueryMock.findByName(student.getName())).andReturn(null);
+		
+		EasyMock.replay(emMock);
+		EasyMock.replay(studentQueryMock);
+		EasyMock.replay(entityTransactionMock);
+		
+
+		
+		studentManager.removeStudent(student.getName());
+	}
 
 
 

@@ -59,6 +59,9 @@ public class StudentManagerImpl implements StudentManager {
 	public void removeStudent(String studentName) throws NotFoundException {
 	    Student student = studentQuery.findByName(studentName);
 	    
+	    if(student==null)
+	    	throw new NotFoundException("not found "+studentName);
+	    
 	    em.getTransaction().begin();
 	    em.remove(student);
 	    em.getTransaction().commit();
