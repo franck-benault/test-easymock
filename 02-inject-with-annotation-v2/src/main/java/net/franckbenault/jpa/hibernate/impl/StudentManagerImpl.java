@@ -1,5 +1,6 @@
 package net.franckbenault.jpa.hibernate.impl;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.persistence.EntityManager;
@@ -9,6 +10,7 @@ import javax.persistence.Persistence;
 import net.franckbenault.jpa.hibernate.Student;
 import net.franckbenault.jpa.hibernate.StudentManager;
 import net.franckbenault.jpa.hibernate.StudentQuery;
+import net.franckbenault.jpa.hibernate.exception.Constraint;
 import net.franckbenault.jpa.hibernate.exception.ConstraintViolatedException;
 import net.franckbenault.jpa.hibernate.exception.NotFoundException;
 
@@ -32,7 +34,7 @@ public class StudentManagerImpl implements StudentManager {
 	public Student createStudent(Student student ) throws ConstraintViolatedException {
 		
 		//name not null ?
-		List<net.franckbenault.jpa.hibernate.exception.Constraint> constraints = student.check();
+		List<Constraint> constraints = student.check();
 		
 		if(!constraints.isEmpty()) {
 			throw new ConstraintViolatedException(constraints);
@@ -40,7 +42,13 @@ public class StudentManagerImpl implements StudentManager {
 			
 		
 	    Student student2 = studentQuery.findByName(student.getName());
-		
+		if(student2!=null) {
+			List<Constraint> constraints2 = new ArrayList<Constraint>();
+			Constraint constraint = new Constraint("duplicate Name");
+			constraints2.add(constraint);
+			throw new ConstraintViolatedException(constraints2);
+		}
+	    
 	    em.getTransaction().begin();
 	    em.persist(student);
 	    em.getTransaction().commit();

@@ -66,7 +66,10 @@ public class StudentManagerMockTest  {
 		entityTransactionMock.commit();
 		EasyMock.expect(emMock.getTransaction()).andReturn(entityTransactionMock).times(2);
 		
+		EasyMock.expect(studentQueryMock.findByName("newName")).andReturn(null);
+		
 		EasyMock.replay(emMock);
+		EasyMock.replay(studentQueryMock);
 		EasyMock.replay(entityTransactionMock);
 		
 		Student s = new Student("newName");
@@ -89,6 +92,30 @@ public class StudentManagerMockTest  {
 		EasyMock.replay(entityTransactionMock);
 		
 		Student s = new Student();
+		
+		s = studentManager.createStudent(s);
+				
+	}
+	
+	@Test(expected=ConstraintViolatedException.class)
+	public void testCreateStudent_DuplicateName() throws ConstraintViolatedException {
+		
+		Student s = new Student();
+		s.setName("duplicateName");
+		
+		EntityTransaction entityTransactionMock = EasyMock.createNiceMock(EntityTransaction.class);
+		entityTransactionMock.begin();
+		entityTransactionMock.commit();
+		EasyMock.expect(emMock.getTransaction()).andReturn(entityTransactionMock).times(2);
+		
+		EasyMock.expect(studentQueryMock.findByName(s.getName())).andReturn(s);
+		
+		EasyMock.replay(emMock);
+		EasyMock.replay(studentQueryMock);
+		EasyMock.replay(entityTransactionMock);
+
+		
+		
 		
 		s = studentManager.createStudent(s);
 				
